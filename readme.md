@@ -82,6 +82,13 @@ There doesn't seem to be any way to do this with an iOS device, although it can
 be done on the simulator by entering the same address. An alternative may be to
 set up an intranet that is accessible to the mobile browser.
 
+### To build using Electron
+
+```
+npm install
+yarn dist
+```
+
 License
 =======
 Copyright (c) 2020 The ACE Centre-North, UK registered charity 1089313. MIT
