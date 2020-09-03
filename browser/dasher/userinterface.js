@@ -9,6 +9,8 @@ other classes.
 Whichever HTML file loads this script must also load the userinterface.css file.
 */
 
+import Factory from './factory.js';
+
 import Limits from './limits.js';
 import Piece from './piece.js';
 import Palette from './palette.js';
@@ -27,7 +29,6 @@ import Speech from './speech.js';
 
 import panels from "./controlpanelspecification.js"
 import ControlPanel from "./controlpanel.js";
-import MessageDisplay from "./messageDisplay.js";
 
 const messageLabelText = "Message:";
 const speechAnnouncement = "Speech is now active.";
@@ -82,7 +83,8 @@ export default class UserInterface {
         this._transitionMillis = 400;
 
         this._message = undefined;
-        this._messageDisplay = new MessageDisplay(this._limits);
+
+        this._factory = new Factory(this._limits,this._keyboardMode);
 
         this._diagnosticSpans = null;
         this._controlPanel = new ControlPanel(panels);
@@ -134,7 +136,7 @@ export default class UserInterface {
     }
     set message(message) {
         this._message = message;
-        this._messageDisplay.update(message);
+        this._factory.messageDisplay.update(message);
     }
 
     get predictors() {
@@ -155,7 +157,8 @@ export default class UserInterface {
         this._controlPanelParent = (
             this._keyboardMode ? null : new Piece('form', this._header));
 
-        this._messageDisplay.load(this._header,this._keyboardMode);
+        this._factory.load(loadingID,this._header);
+
         this._load_view();
 
         this._load_control_panel(loadingID);
@@ -213,7 +216,7 @@ export default class UserInterface {
             // keyboard mode. So, pull the prediction select control out and
             // insert it as the first child of the message holder, which is
             // shown in keyboard mode.
-            this.messageDisplay.loadControls(this._panels.main.prediction.piece);
+            this._factory.messageDisplay.loadControls(this._panels.main.prediction.piece);
         }
 
         this._panels.main.prediction.listener = index => {
@@ -292,7 +295,7 @@ export default class UserInterface {
             this._limits.showDiagnostic = checked;
             this._diagnostic_div_display();
             if (!checked) {
-                this._messageDisplay.setLabelText(messageLabelText);
+                this._factory.messageDisplay.setLabelText(messageLabelText);
             }
         };
         panel.frozen.listener = checked => {
@@ -577,7 +580,7 @@ export default class UserInterface {
             this._controllerRandom.going ? "Stop" : "Go Random");
     }
     clicked_popup() {
-        this._messageDisplay.popupClicked();
+        this._factory.messageDisplay.popupClicked();
     }
 
     // Pointer button was clicked.
